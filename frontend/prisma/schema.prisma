@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Roles: ADMIN, APPROVED_BUYER, PENDING_BUYER, REJECTED_BUYER
+model User {
+  id              String           @id @default(cuid())
+  email           String           @unique
+  password        String
+  name            String
+  companyName     String
+  cacNumber       String
+  phoneNumber     String
+  address         String
+  role            String           @default("PENDING_BUYER")
+  isActive        Boolean          @default(true)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  complianceDocs  ComplianceDoc[]
+  quotes          QuoteRequest[]
+}
+
+// Types: CAC_CERTIFICATE, NAFDAC_LICENSE, TAX_ID, LPO, END_USER_CERTIFICATE, OTHER
+model ComplianceDoc {
+  id          String            @id @default(cuid())
+  userId      String
+  user        User              @relation(fields: [userId], references: [id])
+  type        String
+  filePath    String
+  isVerified  Boolean           @default(false)
+  notes       String?
+  uploadedAt  DateTime          @default(now())
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+  products    Product[]
+}
+
+model Product {
+  id            String      @id @default(cuid())
+  name          String
+  description   String
+  puritySpec    String?     // e.g., "96%", "99.9%"
+  packaging     String      // e.g., "Drums, IBCs, Tankers"
+  coaUrl        String?
+  categoryId    String
+  category      Category    @relation(fields: [categoryId], references: [id])
+  pricePerUnit  Float       @default(0)
+  stockStatus   String      @default("In Stock")
+  quoteItems    QuoteItem[]
+}
+
+// Status: PENDING, QUOTED, CONVERTED, CANCELLED
+model QuoteRequest {
+  id                  String      @id @default(cuid())
+  userId              String
+  user                User        @relation(fields: [userId], references: [id])
+  status              String      @default("PENDING")
+  totalEstimatedPrice Float       @default(0)
+  deliveryAddress     String
+  specialNotes        String?
+  createdAt           DateTime    @default(now())
+  items               QuoteItem[]
+}
+
+model QuoteItem {
+  id        String       @id @default(cuid())
+  quoteId   String
+  quote     QuoteRequest @relation(fields: [quoteId], references: [id])
+  productId String
+  product   Product      @relation(fields: [productId], references: [id])
+  quantity  Float
+  unit      String       // e.g., "Litres", "KG"
+}
