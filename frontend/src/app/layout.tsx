@@ -13,9 +13,9 @@ import { Providers } from "./providers";
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en" className="dark">
       <body className={`${inter.className} min-h-screen flex flex-col`}>
@@ -72,6 +72,7 @@ export default function RootLayout({
             </div>
           </div>
         </footer>
+        </Providers>
       </body>
     </html>
   );

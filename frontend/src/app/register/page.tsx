@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ArrowRight, CheckCircle2, Upload, Building2, UserCircle, ShieldCheck } from "lucide-react";
 
 export default function RegisterPage() {
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -205,13 +206,6 @@ export default function RegisterPage() {
           </div>
         )}
       </div>
-
-      <div className="mt-8 text-center text-xs text-muted-foreground">
-        Already have a verified account? <a href="/login" className="text-primary font-semibold hover:underline">Log in here</a>
-      </div>
-    </div>
-  );
-}
 
       <div className="mt-8 text-center text-xs text-muted-foreground">
         Already have a verified account? <a href="/login" className="text-primary font-semibold hover:underline">Log in here</a>
